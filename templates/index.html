@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wine Quality Predictor</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background:
+                linear-gradient(
+                    rgba(0,0,0,0.65),
+                    rgba(0,0,0,0.65)
+                ),
+                url("https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?auto=format&fit=crop&w=1600&q=80");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #ff4060;
+            font-size: 42px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        form,
+        .result-panel {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            background: white;
+            color: black;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .predict-btn {
+            background: #e11d48;
+        }
+
+        .predict-btn:hover {
+            background: #be123c;
+        }
+
+        .clear-btn {
+            background: #64748b;
+        }
+
+        .clear-btn:hover {
+            background: #475569;
+        }
+
+        .result-panel {
+            text-align: center;
+        }
+
+        .score-circle {
+            width: 180px;
+            height: 180px;
+            margin: 25px auto;
+            border-radius: 50%;
+            border: 4px solid #ff4060;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            background: rgba(255,64,96,0.15);
+        }
+
+        @media(max-width:768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>🍷 Wine Quality Predictor</h1>
+        <p>AI Powered Red Wine Quality Prediction System</p>
+    </div>
+
+    <div class="main-content">
+
+        <form id="predictionForm">
+
+            <div class="form-grid">
+
+                <div class="input-group">
+                    <label>Fixed Acidity</label>
+                    <input type="number" name="fixed_acidity" step="0.1" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Volatile Acidity</label>
+                    <input type="number" name="volatile_acidity" step="0.01" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Citric Acid</label>
+                    <input type="number" name="citric_acid" step="0.01" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Residual Sugar</label>
+                    <input type="number" name="residual_sugar" step="0.1" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Chlorides</label>
+                    <input type="number" name="chlorides" step="0.001" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Free Sulfur Dioxide</label>
+                    <input type="number" name="free_sulfur_dioxide" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Total Sulfur Dioxide</label>
+                    <input type="number" name="total_sulfur_dioxide" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Density</label>
+                    <input type="number" name="density" step="0.0001" required>
+                </div>
+
+                <div class="input-group">
+                    <label>pH</label>
+                    <input type="number" name="pH" step="0.01" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Sulphates</label>
+                    <input type="number" name="sulphates" step="0.01" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Alcohol</label>
+                    <input type="number" name="alcohol" step="0.1" required>
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button
+                    type="button"
+                    class="predict-btn"
+                    onclick="predictWine()">
+                    Predict Quality
+                </button>
+
+                <button
+                    type="button"
+                    class="clear-btn"
+                    onclick="clearForm()">
+                    Clear
+                </button>
+
+            </div>
+
+        </form>
+
+        <div class="result-panel">
+
+            <h2>Predicted Quality Score</h2>
+
+            <div id="scoreCircle" class="score-circle">
+                -
+            </div>
+
+            <p>
+                Enter all wine characteristics and click Predict.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+async function predictWine() {
+
+    try {
+
+        const form = document.getElementById("predictionForm");
+        const formData = new FormData(form);
+
+        for (const value of formData.values()) {
+            if (value === "") {
+                alert("Please fill all fields.");
+                return;
+            }
+        }
+
+        const params = new URLSearchParams(formData);
+
+        const response = await fetch(
+            "/predict?" + params.toString()
+        );
+
+        const data = await response.json();
+
+        if (data.error) {
+            document.getElementById("scoreCircle").innerHTML = "Error";
+            alert(data.error);
+            return;
+        }
+
+        document.getElementById("scoreCircle").innerHTML =
+            Number(data.prediction).toFixed(2);
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+        document.getElementById("scoreCircle").innerHTML =
+            "Error";
+    }
+}
+
+function clearForm() {
+
+    document.getElementById("predictionForm").reset();
+
+    document.getElementById("scoreCircle").innerHTML = "-";
+}
+
+</script>
+
+</body>
+</html>

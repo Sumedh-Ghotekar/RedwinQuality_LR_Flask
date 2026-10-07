@@ -1,0 +1,6 @@
+flask
+scikit-learn
+pandas
+jinja2>=3.1.2
+pyarrow
+joblib
